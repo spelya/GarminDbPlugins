@@ -9,7 +9,6 @@ from sqlalchemy import Integer, DateTime, String, ForeignKey
 
 from activity_plugin_base import ActivityPluginBase
 
-
 logger = logging.getLogger(__file__)
 
 
@@ -32,7 +31,8 @@ def create_activity_view(cls, act_db):
     ]
     view_name = 'hrv_activities_view'
     logger.info("Creating hrv plugin view %s if needed.", view_name)
-    cls.create_join_view(act_db, view_name, view_selectable, cls.activities_table, order_by=cls.activities_table.start_time.desc())
+    cls.create_join_view(act_db, view_name, view_selectable, cls.activities_table,
+                         order_by=cls.activities_table.start_time.desc())
 
 
 class fbb_hrv(ActivityPluginBase):
@@ -71,14 +71,14 @@ class fbb_hrv(ActivityPluginBase):
     def write_record_entry(self, activity_db_session, fit_file, activity_id, message_fields, record_num):
         """Write a record message into the plugin records table."""
         record_table = self._tables['record']
-        if not record_table.s_exists(activity_db_session, {'activity_id' : activity_id, 'record' : record_num}):
+        if not record_table.s_exists(activity_db_session, {'activity_id': activity_id, 'record': record_num}):
             record = {
-                'activity_id'   : activity_id,
-                'record'        : record_num,
-                'timestamp'     : fit_file.utc_datetime_to_local(message_fields.timestamp),
-                'hrv_s'         : message_fields.get('dev_hrv_s'),
-                'hrv_btb'       : message_fields.get('dev_hrv_btb'),
-                'hrv_hr'        : message_fields.get('dev_hrv_hr'),
+                'activity_id': activity_id,
+                'record': record_num,
+                'timestamp': fit_file.utc_datetime_to_local(message_fields.timestamp),
+                'hrv_s': message_fields.get('dev_hrv_s'),
+                'hrv_btb': message_fields.get('dev_hrv_btb'),
+                'hrv_hr': message_fields.get('dev_hrv_hr'),
             }
             logger.debug("writing hrv record %r for %s", record, fit_file.filename)
             activity_db_session.add(record_table(**record))
@@ -87,16 +87,16 @@ class fbb_hrv(ActivityPluginBase):
     def write_session_entry(self, activity_db_session, fit_file, activity_id, message_fields):
         """Write a session message into the plugin sessions table."""
         session_table = self._tables['session']
-        if not session_table.s_exists(activity_db_session, {'activity_id' : activity_id}):
+        if not session_table.s_exists(activity_db_session, {'activity_id': activity_id}):
             session = {
-                'activity_id'   : activity_id,
-                'timestamp'     : fit_file.utc_datetime_to_local(message_fields.timestamp),
-                'min_hr'        : message_fields.get('dev_min_hr'),
-                'hrv_rmssd'     : message_fields.get('dev_hrv_rmssd'),
-                'hrv_sdrr_f'    : message_fields.get('dev_hrv_sdrr_f'),
-                'hrv_sdrr_l'    : message_fields.get('dev_hrv_sdrr_l'),
-                'hrv_pnn50'     : message_fields.get('dev_hrv_pnn50'),
-                'hrv_pnn20'     : message_fields.get('dev_hrv_pnn20'),
+                'activity_id': activity_id,
+                'timestamp': fit_file.utc_datetime_to_local(message_fields.timestamp),
+                'min_hr': message_fields.get('dev_min_hr'),
+                'hrv_rmssd': message_fields.get('dev_hrv_rmssd'),
+                'hrv_sdrr_f': message_fields.get('dev_hrv_sdrr_f'),
+                'hrv_sdrr_l': message_fields.get('dev_hrv_sdrr_l'),
+                'hrv_pnn50': message_fields.get('dev_hrv_pnn50'),
+                'hrv_pnn20': message_fields.get('dev_hrv_pnn20'),
             }
             logger.debug("writing hrv session %r for %s", session, fit_file.filename)
             activity_db_session.add(session_table(**session))
